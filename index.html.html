@@ -1,0 +1,374 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08111f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="受験カウントダウン">
+<title>受験カウントダウン</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg:#08111f;
+  --panel:#111e31;
+  --panel2:#16263c;
+  --blue:#54c8ff;
+  --cyan:#8ce8ff;
+  --text:#f4f8ff;
+  --muted:#9eafc5;
+  --line:#293b53;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse at 50% -10%, #163c66 0, transparent 48%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",
+    "Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+}
+main {
+  width:min(100%,520px);
+  margin:auto;
+  padding:calc(20px + env(safe-area-inset-top)) 18px
+    calc(36px + env(safe-area-inset-bottom));
+}
+header { display:flex; justify-content:space-between; align-items:center; }
+.brand { font-size:12px; letter-spacing:2.5px; color:var(--cyan); font-weight:800; }
+h1 { font-size:25px; line-height:1.4; margin:9px 0 5px; }
+.subtitle { color:var(--muted); font-size:13px; }
+.tag {
+  border:1px solid #315476; color:var(--cyan); border-radius:20px;
+  padding:7px 10px; font-size:11px; white-space:nowrap;
+}
+.hero {
+  position:relative; overflow:hidden; margin:24px 0 25px; padding:24px 20px;
+  border:1px solid #285477; border-radius:24px;
+  background:linear-gradient(140deg,#122b47,#102035 62%,#102a3d);
+  box-shadow:0 12px 40px #0003;
+}
+.hero:after {
+  content:""; position:absolute; width:190px; height:190px; right:-75px; top:-80px;
+  border-radius:50%; border:1px solid #54c8ff28;
+  box-shadow:0 0 0 24px #54c8ff0b,0 0 0 48px #54c8ff08;
+  pointer-events:none;
+}
+.hero-label { font-size:12px; color:var(--cyan); letter-spacing:1.4px; }
+.hero h2 { font-size:20px; margin:12px 0 0; overflow-wrap:anywhere; }
+.count-line { display:flex; align-items:baseline; gap:10px; margin:5px 0 0; }
+.count { font-size:clamp(70px,20vw,104px); line-height:1.12; font-weight:900;
+  letter-spacing:-4px; color:#fff; text-shadow:0 0 28px #54c8ff45; }
+.unit { font-size:20px; color:var(--cyan); font-weight:700; }
+.date-line { color:#b5c7dd; font-size:13px; margin-top:12px; }
+.motivation { margin-top:18px; color:#d5e9fb; font-size:13px; }
+.section-head { display:flex; justify-content:space-between; align-items:center; margin:0 0 12px; }
+.section-head h2 { margin:0; font-size:17px; }
+.counter { color:var(--muted); font-size:12px; }
+.events { display:grid; gap:10px; }
+.event {
+  display:flex; align-items:center; gap:12px; padding:15px;
+  border:1px solid var(--line); border-radius:17px; background:#101c2d;
+}
+.event-mark {
+  width:4px; min-width:4px; height:45px; border-radius:8px;
+  background:var(--blue);
+}
+.event-info { flex:1; min-width:0; }
+.event-name { font-weight:750; font-size:14px; overflow-wrap:anywhere; }
+.event-meta { color:var(--muted); font-size:11px; margin-top:6px; }
+.event-days { text-align:right; min-width:66px; }
+.event-num { font-size:26px; font-weight:850; line-height:1.1; }
+.event-unit { color:var(--muted); font-size:11px; }
+.actions { display:flex; gap:6px; margin-top:8px; justify-content:flex-end; }
+.small-btn {
+  border:1px solid #344962; background:#17283e; color:#dcecff;
+  padding:6px 9px; border-radius:8px; font-size:11px;
+}
+.primary {
+  width:100%; margin-top:15px; border:0; border-radius:14px; padding:15px;
+  background:linear-gradient(100deg,#168fe5,#43c8ff); color:#041426;
+  font-size:15px; font-weight:850; box-shadow:0 7px 22px #159be52a;
+}
+button { cursor:pointer; font:inherit; }
+button:active { transform:scale(.99); }
+.empty {
+  border:1px dashed #344962; border-radius:16px; padding:24px 16px;
+  text-align:center; color:var(--muted); font-size:13px; line-height:1.8;
+}
+.note { color:#8195ae; font-size:11px; text-align:center; margin:20px 0 0; line-height:1.8; }
+dialog {
+  width:calc(100% - 28px); max-width:460px; border:1px solid #344c68;
+  border-radius:22px; padding:22px; background:#101d30; color:var(--text);
+}
+dialog::backdrop { background:#020711c9; backdrop-filter:blur(5px); }
+dialog h2 { margin:0 0 18px; font-size:20px; }
+label { display:block; font-size:12px; color:#b7c9df; margin:14px 0 7px; }
+input,select,textarea {
+  width:100%; border:1px solid #344962; border-radius:11px; padding:13px;
+  background:#091525; color:#fff; font:inherit; font-size:15px;
+}
+textarea { resize:vertical; min-height:65px; }
+.form-buttons { display:flex; gap:10px; margin-top:20px; }
+.form-buttons button { flex:1; padding:13px; border-radius:11px; font-weight:750; }
+.cancel { background:#1b2a40; border:1px solid #344962; color:#e5efff; }
+.save { background:#54c8ff; border:0; color:#061523; }
+@media (min-width:420px) {
+  main { padding-left:24px; padding-right:24px; }
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="brand">NEXT LEVEL / EXAM</div>
+    <div class="tag">受験生モード</div>
+  </header>
+
+  <h1>合格まで、<br>一日ずつ進もう。</h1>
+  <div class="subtitle">未来は、今日の積み重ねで変わる。</div>
+
+  <section class="hero" aria-live="polite">
+    <div class="hero-label">YOUR NEXT EXAM</div>
+    <h2 id="heroName">入試日を登録しよう</h2>
+    <div class="count-line">
+      <div class="count" id="heroDays">--</div>
+      <div class="unit" id="heroUnit">DAYS LEFT</div>
+    </div>
+    <div class="date-line" id="heroDate">最初の目標を設定しよう</div>
+    <div class="motivation" id="heroMessage">小さな一歩が、大きな自信になる。</div>
+  </section>
+
+  <div class="section-head">
+    <h2>MY EXAM LIST</h2>
+    <div class="counter" id="counter">0 / 5 件</div>
+  </div>
+  <div class="events" id="events"></div>
+  <button class="primary" id="addBtn" type="button">＋ 入試日を追加する</button>
+  <p class="note">登録内容はこの端末のブラウザに保存されます。<br>
+    今日の努力が、未来の自分をつくる。</p>
+</main>
+
+<dialog id="editor">
+  <form id="eventForm">
+    <h2 id="formTitle">入試日を登録</h2>
+    <label for="name">入試名・目標名 *</label>
+    <input id="name" maxlength="50" required placeholder="例：三重県立高校入試">
+    <label for="category">分類</label>
+    <select id="category">
+      <option>高校入試</option>
+      <option>大学入試</option>
+      <option>中学入試</option>
+      <option>模試</option>
+      <option>その他</option>
+    </select>
+    <label for="date">試験日 *</label>
+    <input id="date" type="date" required>
+    <label for="memo">メモ（任意）</label>
+    <textarea id="memo" maxlength="120" placeholder="例：受験票を忘れずに"></textarea>
+    <div class="form-buttons">
+      <button class="cancel" id="cancelBtn" type="button">キャンセル</button>
+      <button class="save" type="submit">保存する</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+const STORAGE_KEY = "nextLevelExam.v1";
+const $ = id => document.getElementById(id);
+let exams = loadExams();
+let editingId = null;
+
+function loadExams() {
+  try {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    return Array.isArray(data) ? data.filter(x =>
+      x && typeof x.id === "string" &&
+      typeof x.name === "string" &&
+      typeof x.date === "string"
+    ).slice(0, 5) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveExams() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(exams));
+}
+
+function dayNumber(dateString) {
+  const [y, m, d] = dateString.split("-").map(Number);
+  const target = Date.UTC(y, m - 1, d);
+  const now = new Date();
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.round((target - today) / 86400000);
+}
+
+function formatDate(dateString) {
+  const [y, m, d] = dateString.split("-").map(Number);
+  return `${y}年${m}月${d}日`;
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[ch]));
+}
+
+function dayLabel(n) {
+  if (n < 0) return "終了";
+  if (n === 0) return "本番";
+  return `${n}日`;
+}
+
+function render() {
+  exams.sort((a, b) => a.date.localeCompare(b.date));
+  const upcoming = exams.filter(e => dayNumber(e.date) >= 0);
+  const next = upcoming[0];
+
+  $("counter").textContent = `${exams.length} / 5 件`;
+  $("addBtn").disabled = exams.length >= 5;
+  $("addBtn").textContent = exams.length >= 5
+    ? "登録上限（5件）に達しています"
+    : "＋ 入試日を追加する";
+
+  if (next) {
+    const n = dayNumber(next.date);
+    $("heroName").textContent = next.name;
+    $("heroDays").textContent = n;
+    $("heroUnit").textContent = n === 1 ? "DAY LEFT" : "DAYS LEFT";
+    $("heroDate").textContent = `${formatDate(next.date)} ／ ${next.category || "目標"}`;
+    $("heroMessage").textContent = n === 0
+      ? "いよいよ本番。深呼吸して、いつも通りに。"
+      : n <= 7 ? "直前こそ、できることを一つずつ。"
+      : n <= 30 ? "積み重ねた努力を、自信に変えよう。"
+      : "今日の一歩が、合格へつながっている。";
+  } else {
+    $("heroName").textContent = exams.length ? "次の目標を設定しよう" : "入試日を登録しよう";
+    $("heroDays").textContent = "—";
+    $("heroUnit").textContent = "DAYS LEFT";
+    $("heroDate").textContent = exams.length
+      ? "登録済みの試験日はすべて過ぎています"
+      : "最初の目標を設定しよう";
+    $("heroMessage").textContent = "小さな一歩が、大きな自信になる。";
+  }
+
+  if (!exams.length) {
+    $("events").innerHTML = '<div class="empty">まだ入試日が登録されていません。<br>最初の目標を追加して、カウントダウンを始めよう。</div>';
+    return;
+  }
+
+  $("events").innerHTML = exams.map(e => {
+    const n = dayNumber(e.date);
+    const daysText = n < 0 ? "終了" : n === 0 ? "本番" : n;
+    const unitText = n < 0 || n === 0 ? "" : "日";
+    return `<article class="event">
+      <div class="event-mark"></div>
+      <div class="event-info">
+        <div class="event-name">${escapeHTML(e.name)}</div>
+        <div class="event-meta">${escapeHTML(e.category || "その他")} · ${formatDate(e.date)}</div>
+        ${e.memo ? `<div class="event-meta">${escapeHTML(e.memo)}</div>` : ""}
+        <div class="actions">
+          <button class="small-btn" data-edit="${e.id}" type="button">編集</button>
+          <button class="small-btn" data-delete="${e.id}" type="button">削除</button>
+        </div>
+      </div>
+      <div class="event-days">
+        <div class="event-num">${daysText}</div>
+        <div class="event-unit">${unitText}</div>
+      </div>
+    </article>`;
+  }).join("");
+}
+
+function openEditor(exam = null) {
+  editingId = exam ? exam.id : null;
+  $("formTitle").textContent = exam ? "入試日を編集" : "入試日を登録";
+  $("name").value = exam?.name || "";
+  $("category").value = exam?.category || "高校入試";
+  $("date").value = exam?.date || "";
+  $("memo").value = exam?.memo || "";
+  $("editor").showModal();
+}
+
+$("addBtn").addEventListener("click", () => {
+  if (exams.length < 5) openEditor();
+});
+
+$("cancelBtn").addEventListener("click", () => $("editor").close());
+
+$("events").addEventListener("click", event => {
+  const editButton = event.target.closest("[data-edit]");
+  const deleteButton = event.target.closest("[data-delete]");
+
+  if (editButton) {
+    const exam = exams.find(e => e.id === editButton.dataset.edit);
+    if (exam) openEditor(exam);
+  }
+
+  if (deleteButton) {
+    const exam = exams.find(e => e.id === deleteButton.dataset.delete);
+    if (exam && confirm(`「${exam.name}」を削除しますか？`)) {
+      exams = exams.filter(e => e.id !== exam.id);
+      saveExams();
+      render();
+    }
+  }
+});
+
+$("eventForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const name = $("name").value.trim();
+  const date = $("date").value;
+
+  if (!name || !date) return;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    alert("試験日を正しく入力してください。");
+    return;
+  }
+
+  const [y, m, d] = date.split("-").map(Number);
+  const check = new Date(y, m - 1, d);
+  if (check.getFullYear() !== y || check.getMonth() !== m - 1 ||
+      check.getDate() !== d) {
+    alert("実在する日付を入力してください。");
+    return;
+  }
+
+  const record = {
+    id: editingId || (crypto.randomUUID
+      ? crypto.randomUUID()
+      : String(Date.now()) + Math.random().toString(16).slice(2)),
+    name,
+    category: $("category").value,
+    date,
+    memo: $("memo").value.trim()
+  };
+
+  if (editingId) {
+    exams = exams.map(e => e.id === editingId ? record : e);
+  } else {
+    if (exams.length >= 5) {
+      alert("入試日は最大5件まで登録できます。");
+      return;
+    }
+    exams.push(record);
+  }
+
+  try {
+    saveExams();
+    $("editor").close();
+    render();
+  } catch {
+    alert("保存できませんでした。ブラウザの空き容量や設定をご確認ください。");
+  }
+});
+
+render();
+</script>
+</body>
+</html>
